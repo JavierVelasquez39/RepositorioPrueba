@@ -37,16 +37,39 @@ class ListaCircular:
                 break
         return None
 
+    def buscar_por_indice(self, indice):
+        temp = self.cabeza
+        if not temp:
+            return None
+        for _ in range(indice):
+            temp = temp.siguiente
+            if temp == self.cabeza:
+                return None
+        return temp
+
     def mostrar(self):
         temp = self.cabeza
         if not temp:
             return
         while True:
             print(f"Matriz: {temp.nombre}, n: {temp.n}, m: {temp.m}")
-            for fila in temp.datos:
-                print(fila)
+            for i in range(temp.n):
+                fila = temp.datos.buscar_por_indice(i)
+                if fila:
+                    fila_datos = [celda.datos[0] for celda in self.iterar_lista(fila.datos)]
+                    print(f"Fila {i + 1}: {fila_datos}")
             temp = temp.siguiente
             if temp == self.cabeza:
+                break
+
+    def iterar_lista(self, lista):
+        temp = lista.cabeza
+        if not temp:
+            return
+        while True:
+            yield temp
+            temp = temp.siguiente
+            if temp == lista.cabeza:
                 break
 
 class PatronNodo:
@@ -103,30 +126,22 @@ def leer_archivo(ruta):
             fila = ListaCircular()
             for j in range(m):
                 fila.agregar("", 0, 0, [0])
-            datos.agregar("", 0, 0, fila)
-        
+            datos.agregar(str(i), 0, 0, fila)
         for dato in matriz.findall('dato'):
             x = int(dato.get('x')) - 1
             y = int(dato.get('y')) - 1
             valor = int(dato.text)
-            
-            # Verificar si la fila existe antes de continuar
-            fila = datos.buscar(x)
-            if fila is None:
-                print(f"Error: No se encontró la fila {x} en la matriz {nombre}")
-                continue
-            
-            # Verificar si la celda existe antes de continuar
-            celda = fila.datos.buscar(y)
-            if celda is None:
-                print(f"Error: No se encontró la celda {y} en la fila {x} en la matriz {nombre}")
-                continue
-            
-            celda.datos[0] = valor
-        
+            fila = datos.buscar_por_indice(x)
+            if fila is not None:
+                celda = fila.datos.buscar_por_indice(y)
+                if celda is not None:
+                    celda.datos[0] = valor
+                else:
+                    print(f"Advertencia: No se encontró la celda en la posición {y}")
+            else:
+                print(f"Advertencia: No se encontró la fila en la posición {x}")
         lista.agregar(nombre, n, m, datos)
     return lista
-
 
 def procesar_matriz(nodo):
     n, m = nodo.n, nodo.m
@@ -134,10 +149,10 @@ def procesar_matriz(nodo):
     patrones = ListaPatrones()
     
     for i in range(n):
-        fila = datos.buscar(i)
+        fila = datos.buscar_por_indice(i)
         patron = ListaCircular()
         for j in range(m):
-            celda = fila.datos.buscar(j)
+            celda = fila.datos.buscar_por_indice(j)
             patron.agregar("", 0, 0, [1 if celda.datos[0] > 0 else 0])
         patrones.agregar(patron, i)
     
@@ -150,10 +165,10 @@ def procesar_matriz(nodo):
             nueva_fila.agregar("", 0, 0, [0])
         grupo_temp = temp.grupo.cabeza
         while True:
-            fila = datos.buscar(grupo_temp.nombre)
+            fila = datos.buscar_por_indice(int(grupo_temp.nombre))
             for j in range(m):
-                celda = fila.datos.buscar(j)
-                nueva_celda = nueva_fila.buscar(j)
+                celda = fila.datos.buscar_por_indice(j)
+                nueva_celda = nueva_fila.buscar_por_indice(j)
                 nueva_celda.datos[0] += celda.datos[0]
             grupo_temp = grupo_temp.siguiente
             if grupo_temp == temp.grupo.cabeza:
@@ -239,6 +254,7 @@ def main():
             ruta = input("Ingrese la ruta del archivo: ")
             lista = leer_archivo(ruta)
             print("Archivo cargado exitosamente.")
+            lista.mostrar()  # Mostrar la matriz cargada
         elif opcion == '2':
             if lista:
                 nombre = input("Ingrese el nombre de la matriz a procesar: ")
