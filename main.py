@@ -104,15 +104,29 @@ def leer_archivo(ruta):
             for j in range(m):
                 fila.agregar("", 0, 0, [0])
             datos.agregar("", 0, 0, fila)
+        
         for dato in matriz.findall('dato'):
             x = int(dato.get('x')) - 1
             y = int(dato.get('y')) - 1
             valor = int(dato.text)
+            
+            # Verificar si la fila existe antes de continuar
             fila = datos.buscar(x)
+            if fila is None:
+                print(f"Error: No se encontró la fila {x} en la matriz {nombre}")
+                continue
+            
+            # Verificar si la celda existe antes de continuar
             celda = fila.datos.buscar(y)
+            if celda is None:
+                print(f"Error: No se encontró la celda {y} en la fila {x} en la matriz {nombre}")
+                continue
+            
             celda.datos[0] = valor
+        
         lista.agregar(nombre, n, m, datos)
     return lista
+
 
 def procesar_matriz(nodo):
     n, m = nodo.n, nodo.m
