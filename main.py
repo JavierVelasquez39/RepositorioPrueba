@@ -164,6 +164,7 @@ def procesar_matriz(nodo):
         for j in range(m):
             nueva_fila.agregar("", 0, 0, [0])
         grupo_temp = temp.grupo.cabeza
+        contador = 0
         while True:
             fila = datos.buscar_por_indice(int(grupo_temp.nombre))
             for j in range(m):
@@ -171,10 +172,11 @@ def procesar_matriz(nodo):
                 nueva_celda = nueva_fila.buscar_por_indice(j)
                 nueva_celda.datos[0] += celda.datos[0]
             grupo_temp = grupo_temp.siguiente
+            contador += 1
             if grupo_temp == temp.grupo.cabeza:
                 break
         matriz_reducida.agregar("", 0, 0, nueva_fila)
-        frecuencias.agregar("", 0, 0, [len(temp.grupo.cabeza)])
+        frecuencias.agregar("", 0, 0, [contador])
         temp = temp.siguiente
         if temp == patrones.cabeza:
             break
