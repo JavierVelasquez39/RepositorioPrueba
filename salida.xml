@@ -1,0 +1,19 @@
+<matrices>
+    <matriz nombre="Ejemplo_Salida" n="3" m="4" g="3">
+        <dato x="1" y="1">5</dato>
+        <dato x="1" y="2">7</dato>
+        <dato x="1" y="3">0</dato>
+        <dato x="1" y="4">6</dato>
+        <dato x="2" y="1">0</dato>
+        <dato x="2" y="2">0</dato>
+        <dato x="2" y="3">9</dato>
+        <dato x="2" y="4">4</dato>
+        <dato x="3" y="1">1</dato>
+        <dato x="3" y="2">0</dato>
+        <dato x="3" y="3">1</dato>
+        <dato x="3" y="4">5</dato>
+        <frecuencia g="1">2</frecuencia>
+        <frecuencia g="2">2</frecuencia>
+        <frecuencia g="3">1</frecuencia>
+    </matriz>
+</matrices>
