@@ -175,7 +175,7 @@ def procesar_matriz(nodo):
             contador += 1
             if grupo_temp == temp.grupo.cabeza:
                 break
-        matriz_reducida.agregar("", 0, 0, nueva_fila)
+        matriz_reducida.agregar(str(contador), 0, 0, nueva_fila)  # Usar el contador como nombre
         frecuencias.agregar("", 0, 0, [contador])
         temp = temp.siguiente
         if temp == patrones.cabeza:
@@ -186,24 +186,31 @@ def procesar_matriz(nodo):
 def escribir_archivo_salida(nombre, matriz_reducida, frecuencias, ruta_salida):
     root = ET.Element("matrices")
     matriz_elem = ET.SubElement(root, "matriz", nombre=nombre, n=str(matriz_reducida.cabeza.n), m=str(matriz_reducida.cabeza.m), g=str(frecuencias.cabeza.n))
+    
     temp = matriz_reducida.cabeza
     while True:
         fila_temp = temp.datos.cabeza
         while True:
             for j, valor in enumerate(fila_temp.datos):
-                ET.SubElement(matriz_elem, "dato", x=str(temp.nombre+1), y=str(j+1)).text = str(valor)
+                if temp.nombre.isdigit():  # Verificar que temp.nombre es un dígito
+                    ET.SubElement(matriz_elem, "dato", x=str(int(temp.nombre)+1), y=str(j+1)).text = str(valor)
+                else:
+                    print(f"Advertencia: Nombre del nodo no es un dígito: {temp.nombre}")
+                    ET.SubElement(matriz_elem, "dato", x="0", y=str(j+1)).text = str(valor)
             fila_temp = fila_temp.siguiente
             if fila_temp == temp.datos.cabeza:
                 break
         temp = temp.siguiente
         if temp == matriz_reducida.cabeza:
             break
+    
     temp = frecuencias.cabeza
     while True:
         ET.SubElement(matriz_elem, "frecuencia", g=str(temp.datos[0])).text = str(temp.datos[0])
         temp = temp.siguiente
         if temp == frecuencias.cabeza:
             break
+    
     tree = ET.ElementTree(root)
     tree.write(ruta_salida, encoding='utf-8', xml_declaration=True)
 
@@ -226,8 +233,8 @@ def generar_grafica(nodo, matriz_reducida, frecuencias):
     while True:
         fila_temp = temp.datos.cabeza
         while True:
-            dot_reducida.node(f'FR{fila_temp.nombre+1}', f'Fila {fila_temp.nombre+1}: {fila_temp.datos}')
-            dot_reducida.edge('MR', f'FR{fila_temp.nombre+1}')
+            dot_reducida.node(f'FR{temp.nombre+1}', f'Fila {temp.nombre+1}: {fila_temp.datos}')
+            dot_reducida.edge('MR', f'FR{temp.nombre+1}')
             fila_temp = fila_temp.siguiente
             if fila_temp == temp.datos.cabeza:
                 break
@@ -244,7 +251,7 @@ def mostrar_menu():
     print("3. Escribir archivo salida")
     print("4. Mostrar datos del estudiante")
     print("5. Generar gráfica")
-    print("6. Salida")
+    print("6. Salir")
 
 def main():
     lista = None
@@ -278,23 +285,24 @@ def main():
             else:
                 print("Primero debe procesar un archivo.")
         elif opcion == '4':
-            print("Carné: 12345678")
-            print("Nombre: Juan Pérez")
-            print("Curso: Programación Avanzada")
+            print("Carné: 202307775")
+            print("Nombre: Javier Andrés Velásquez Bonilla")
+            print("Curso: Introducción a la Programación y Computación 2")
             print("Carrera: Ingeniería en Sistemas")
-            print("Semestre: 5to")
-            print("Documentación: https://github.com/usuario/proyecto")
+            print("Semestre: 4to")
+            print("Documentación: https://github.com/JavierVelasquez39/RepositorioPrueba")
         elif opcion == '5':
             if matriz_procesada:
                 nodo, matriz_reducida, frecuencias = matriz_procesada
                 generar_grafica(nodo, matriz_reducida, frecuencias)
-                print("Gráfica generada exitosamente.")
+                print("Gráficas generadas exitosamente.")
             else:
                 print("Primero debe procesar un archivo.")
         elif opcion == '6':
+            print("Saliendo...")
             break
         else:
-            print("Opción no válida.")
+            print("Opción no válida. Por favor, seleccione una opción válida.")
 
 if __name__ == "__main__":
     main()
